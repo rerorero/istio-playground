@@ -1,0 +1,38 @@
+---
+- name: Check if already installed
+  stat:
+    path: /etc/kubernetes/pki
+  register: ca
+
+- block:
+    - name: kubeadam init
+      shell: >
+        kubeadm init
+        --apiserver-advertise-address={{ ansible_host }}
+        --apiserver-bind-port={{ kube_master_api_port }}
+        --pod-network-cidr={{ kube_service_cidr }}
+        --token={{ kubeadm_token}}
+      become: yes
+      register: output
+
+    - debug: msg={{ output.stdout_lines }}
+  when: ca.stat.isdir is not defined
+
+- name: Copy kubernetes conf to user home.
+  shell: cp {{ kubectl_conf_path }} /home/{{ item }} && chown {{ item }}:{{ item }} /home/{{ item }}/admin.conf
+  args:
+    creates: /home/{{ item }}/admin.conf
+  become: yes
+  with_items: "{{ kube_users }}"
+
+- name: chmod config
+  command: chown {{ item }}:{{ item }} /home/{{ item }}
+  become: yes
+  with_items: "{{ kube_users }}"
+
+- name: Export kubeconfig environments
+  template:
+    src: kubeconf.sh.j2
+    dest: /etc/profile.d/kubeconf.sh
+  become: yes
+

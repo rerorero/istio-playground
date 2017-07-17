@@ -1,0 +1,78 @@
+---
+- name: Create kube group
+  group:
+    name: kube
+    gid: "{{ kube_gid }}"
+    state: present
+  become: yes
+
+- name: Create kube user
+  user:
+    name: kube
+    group: kube
+    uid: "{{ kube_uid }}"
+    state: present
+  become: yes
+
+- name: Create common directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+    owner: kube
+    group: kube
+  with_items:
+    - "{{ kube_pkg_dir }}"
+  become: yes
+
+# - name: Check if packages has been donwloaded
+#   stat: path="{{ kube_pkg_dir }}/kubernetes"
+#   register: pkg_stat
+#   become: yes
+
+- name: Download packages if not exists
+  unarchive:
+    src: "{{ item.url }}"
+    dest: "{{ kube_pkg_dir }}"
+    mode: 0755
+    owner: kube
+    group: kube
+    remote_src: True
+    creates: "{{ kube_pkg_dir }}/kubernetes/{{ item.name }}"
+  become: yes
+  with_items:
+    - name: clien
+      url: "{{ kube_client_pkg_url }}"
+    - name: server
+      url: "{{ kube_server_pkg_url }}"
+
+- name: Install kubectl
+  file:
+    src: "{{ kube_pkg_dir }}/kubernetes/server/bin/{{ item }}"
+    path: "{{ kube_bin_dir }}/{{ item }}"
+    state: link
+  with_items:
+    - kubectl
+  become: yes
+
+- name: Add kubernetes' official GPG key
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+  become: yes
+
+- name: Set up kubernetes repository
+  apt_repository:
+    repo: "{{ kube_repo }}"
+    state: present
+  become: yes
+
+- name: Install kubelet, kubeadm
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+    state: present
+  with_items:
+    - kubelet
+    - kubeadm
+  become: yes

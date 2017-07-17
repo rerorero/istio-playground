@@ -1,0 +1,17 @@
+---
+- hosts: all
+  roles:
+    - common
+
+- hosts: kube-master
+  roles:
+    - kube-master
+    - weave
+
+- hosts: kube-node
+  roles:
+    - kube-node
+
+- hosts: kube-master
+  roles:
+    - istio

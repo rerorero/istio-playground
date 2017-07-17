@@ -1,0 +1,11 @@
+---
+kube_uid: 3030
+kube_gid: 3030
+
+kube_client_pkg_url: "https://storage.googleapis.com/kubernetes-release/release/{{ kube_version }}/kubernetes-client-linux-amd64.tar.gz"
+kube_server_pkg_url: "https://storage.googleapis.com/kubernetes-release/release/{{ kube_version }}/kubernetes-server-linux-amd64.tar.gz"
+
+kube_pkg_dir: "/opt/kube-{{ kube_version }}"
+kube_bin_dir: /usr/local/bin
+
+kube_repo: "deb http://apt.kubernetes.io/ kubernetes-{{ ansible_lsb.codename }} main stable"

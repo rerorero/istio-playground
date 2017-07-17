@@ -1,0 +1,2 @@
+---
+weave_manifest_path: "{{ kube_manifest_dir }}/weave.yml"

@@ -1,0 +1,55 @@
+---
+# TODO remove getIstio script dpendency
+- name: Install istio
+  shell: curl -L https://git.io/getIstio | sh -
+  args: 
+    chdir: /opt
+    creates: "{{ istio_pkg_dir }}"
+  become: yes
+
+- name: Set PATH to istio binaries
+  template:
+    src: istio.sh.j2
+    dest: /etc/profile.d/istio.sh
+  become: yes
+
+- name: Setup RBAC
+  kubectl:
+    action: present
+    filepath: "{{ istio_pkg_dir }}/install/kubernetes/istio-rbac-beta.yaml"
+  environment:
+    KUBECONFIG: "{{ kubectl_conf_path }}"
+  become: yes
+
+- name: Install Istio's core components.
+  kubectl:
+    action: present
+    filepath: "{{ istio_pkg_dir }}/install/kubernetes/istio.yaml"
+  environment:
+    KUBECONFIG: "{{ kubectl_conf_path }}"
+  become: yes
+  
+- name: Setup prometheus addon
+  kubectl:
+    action: present
+    filepath: "{{ istio_pkg_dir }}/install/kubernetes/addons/prometheus.yaml"
+  environment:
+    KUBECONFIG: "{{ kubectl_conf_path }}"
+  become: yes
+  
+- name: Setup grafana addon
+  kubectl:
+    action: present
+    filepath: "{{ istio_pkg_dir }}/install/kubernetes/addons/grafana.yaml"
+  environment:
+    KUBECONFIG: "{{ kubectl_conf_path }}"
+  become: yes
+  
+- name: Setup zipkin addon
+  kubectl:
+    action: present
+    filepath: "{{ istio_pkg_dir }}/install/kubernetes/addons/zipkin.yaml"
+  environment:
+    KUBECONFIG: "{{ kubectl_conf_path }}"
+  become: yes
+  

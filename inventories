@@ -1,0 +1,14 @@
+istio1 ansible_host=192.168.50.21
+istio2 ansible_host=192.168.50.22
+istio3 ansible_host=192.168.50.23
+
+[kube-master]
+istio1
+
+[kube-node]
+istio2
+istio3
+
+[all:vars]
+ansible_user=vagrant
+ansible_ssh_pass=vagrant

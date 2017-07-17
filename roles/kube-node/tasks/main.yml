@@ -1,0 +1,17 @@
+---
+- name: Check if already installed
+  stat:
+    path: /etc/kubernetes/pki
+  register: ca
+
+- block:
+    - name: kubeadam join
+      shell: >
+        kubeadm join
+        --token={{ kubeadm_token}}
+        {{ kube_master_host }}:{{ kube_master_api_port }}
+      become: yes
+      register: output
+
+    - debug: msg={{ output.stdout_lines }}
+  when: ca.stat.isdir is not defined

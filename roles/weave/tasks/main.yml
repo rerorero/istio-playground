@@ -1,0 +1,19 @@
+---
+- name: kubectl version
+  shell: kubectl version | base64 | tr -d '\n'
+  register: kubeversion
+
+- name: Download weave manifest
+  get_url:
+    url: "https://cloud.weave.works/k8s/net?k8s-version={{ kubeversion.stdout }}"
+    dest: "{{ weave_manifest_path }}"
+    mode: 0600
+  become: yes
+
+- name: Setup weave pod
+  kubectl:
+    action: present
+    filepath: "{{ weave_manifest_path }}"
+  environment:
+    KUBECONFIG: "{{ kubectl_conf_path }}"
+  become: yes
