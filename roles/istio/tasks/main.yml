@@ -16,40 +16,13 @@
 - name: Setup RBAC
   kubectl:
     action: present
-    filepath: "{{ istio_pkg_dir }}/install/kubernetes/istio-rbac-beta.yaml"
+    filepath: "{{ item }}"
   environment:
     KUBECONFIG: "{{ kubectl_conf_path }}"
+  with_items:
+    - "{{ istio_pkg_dir }}/install/kubernetes/istio-rbac-beta.yaml"
+    - "{{ istio_pkg_dir }}/install/kubernetes/istio.yaml"
+    - "{{ istio_pkg_dir }}/install/kubernetes/addons/prometheus.yaml"
+    - "{{ istio_pkg_dir }}/install/kubernetes/addons/grafana.yaml"
+    - "{{ istio_pkg_dir }}/install/kubernetes/addons/zipkin.yaml"
   become: yes
-
-- name: Install Istio's core components.
-  kubectl:
-    action: present
-    filepath: "{{ istio_pkg_dir }}/install/kubernetes/istio.yaml"
-  environment:
-    KUBECONFIG: "{{ kubectl_conf_path }}"
-  become: yes
-  
-- name: Setup prometheus addon
-  kubectl:
-    action: present
-    filepath: "{{ istio_pkg_dir }}/install/kubernetes/addons/prometheus.yaml"
-  environment:
-    KUBECONFIG: "{{ kubectl_conf_path }}"
-  become: yes
-  
-- name: Setup grafana addon
-  kubectl:
-    action: present
-    filepath: "{{ istio_pkg_dir }}/install/kubernetes/addons/grafana.yaml"
-  environment:
-    KUBECONFIG: "{{ kubectl_conf_path }}"
-  become: yes
-  
-- name: Setup zipkin addon
-  kubectl:
-    action: present
-    filepath: "{{ istio_pkg_dir }}/install/kubernetes/addons/zipkin.yaml"
-  environment:
-    KUBECONFIG: "{{ kubectl_conf_path }}"
-  become: yes
-  
