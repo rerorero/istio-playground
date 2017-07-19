@@ -1,7 +1,12 @@
 ---
-# TODO remove getIstio script dpendency
+- name: Put install script
+  template:
+    src: getIstio.sh.j2
+    dest: /tmp/getIstio.sh
+    mode: 0777
+
 - name: Install istio
-  shell: curl -L https://git.io/getIstio | sh -
+  shell: /tmp/getIstio.sh
   args: 
     chdir: /opt
     creates: "{{ istio_pkg_dir }}"
@@ -13,6 +18,13 @@
     dest: /etc/profile.d/istio.sh
   become: yes
 
+# workaround ref. https://github.com/istio/istio/pull/333
+- name: Put install script
+  template:
+    src: istio-rbac-beta.mod.yaml.j2
+    dest: /tmp/istio-rbac-beta.mod.yaml
+    mode: 0644
+
 - name: Setup RBAC
   kubectl:
     action: present
@@ -20,7 +32,8 @@
   environment:
     KUBECONFIG: "{{ kubectl_conf_path }}"
   with_items:
-    - "{{ istio_pkg_dir }}/install/kubernetes/istio-rbac-beta.yaml"
+    # - "{{ istio_pkg_dir }}/install/kubernetes/istio-rbac-beta.yaml"
+    - "/tmp/istio-rbac-beta.mod.yaml"
     - "{{ istio_pkg_dir }}/install/kubernetes/istio.yaml"
     - "{{ istio_pkg_dir }}/install/kubernetes/addons/prometheus.yaml"
     - "{{ istio_pkg_dir }}/install/kubernetes/addons/grafana.yaml"

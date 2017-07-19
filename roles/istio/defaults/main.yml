@@ -1,3 +1,0 @@
----
-# TODO remove getIstio script dpendency
-istio_pkg_dir: "/opt/istio-0.1.6"

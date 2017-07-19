@@ -14,4 +14,4 @@
 
 - hosts: kube-master
   roles:
-    - istio
+    - istio-0.1.6
