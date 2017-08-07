@@ -1,0 +1,15 @@
+---
+- name: Install istioctl
+  shell: curl -L https://git.io/getIstio | sh -
+  become: yes
+
+- name: Install istio chart
+  command: "{{ item }}"
+  with_items:
+    - "helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator"
+    - helm repo update
+    - "helm install --name {{ istio_release }} incubator/istio --set rbac.install=true"
+  environment:
+    KUBECONFIG: "{{ kubectl_conf_path }}"
+  become: yes
+

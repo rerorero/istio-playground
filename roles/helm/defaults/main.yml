@@ -1,0 +1,3 @@
+---
+helm_pkg_name: helm-v2.5.1-linux-amd64
+helm_pkg_url: "https://storage.googleapis.com/kubernetes-helm/{{ helm_pkg_name }}.tar.gz"
