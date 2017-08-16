@@ -36,9 +36,9 @@
     dest: /etc/profile.d/kubeconf.sh
   become: yes
 
-  # This is workarround
-- name: Enforce default RBAC
-  command: "kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default"
-  environment:
-    KUBECONFIG: "{{ kubectl_conf_path }}"
-  become: yes
+#   # This is workarround
+# - name: Enforce default RBAC
+#   command: "kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default"
+#   environment:
+#     KUBECONFIG: "{{ kubectl_conf_path }}"
+#   become: yes
